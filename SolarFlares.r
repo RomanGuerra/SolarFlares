@@ -49,6 +49,11 @@ num_cols = ceiling((max(SolarData$x.pos.asec) - min(SolarData$x.pos.asec)) / cel
 
 # Step 3: Aggregating Data
 # 3.1. Group the flare events by their X and Y positions and assign them to the corresponding grid cells.
+library(dplyr)
+grouped_data = SolarData %>% group_by(
+                            X = cut('x.pos.asec', breaks=unique(grid$X)),
+                            Y = cut('y.pos.asec', breaks=unique(grid$Y))) %>% 
+            summarize(Total_Counts=sum('total.counts'))
 
 
 # 3.2. In each grid cell, calculate the total count of all flare events falling within that cell.
