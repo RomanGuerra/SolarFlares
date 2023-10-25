@@ -51,20 +51,30 @@ num_cols = ceiling((max(SolarData$x.pos.asec) - min(SolarData$x.pos.asec)) / cel
 # 3.1. Group the flare events by their X and Y positions and assign them to the corresponding grid cells.
 library(dplyr)
 grouped_data = SolarData %>% group_by(
-                            X = cut('x.pos.asec', breaks=unique(grid$X)),
-                            Y = cut('y.pos.asec', breaks=unique(grid$Y))) %>% 
-            summarize(Total_Counts=sum('total.counts'))
+                            X = cut(x.pos.asec, breaks=unique(grid$X)),
+                            Y = cut(y.pos.asec, breaks=unique(grid$Y))) %>% 
+            summarize(Total_Counts=sum(total.counts))
 
 
 # 3.2. In each grid cell, calculate the total count of all flare events falling within that cell.
 
 # Step 4: Intensity Estimation
 # 4.1. For each grid cell, calculate the intensity as the total count of flare events within the cell.
+grouped_data$Intensity = grouped_data$Total_Counts
+
 # 4.2. You can also normalize the intensity values to compare the relative intensity in different regions of the solar disk.
+grouped_data$Normalized_Intensity = (grouped_data$Intensity - min(grouped_data$Intensity)) / (max(grouped_data$Intensity) - min(grouped_data$Intensity))
 
 # Step 5: Visualization
 # 5.1. Create visualizations of the intensity map, with grid cells color-coded to represent the intensity level.
 # 5.2. You can use heatmaps or contour plots to visualize the intensity across the solar disk.
+library(ggplot2)
+
+ggplot(grouped_data, aes(x = X, y= Y, fill = Intensity)) +
+    geom_tile() +
+    scale_fill_gradient(low = "white", high = "red") +
+    labs(title = "Solar Flare Intensity Map", x = "X Position", y = "Y Position") +
+    theme_minimal()
 
 # Step 6: Analysis
 # 6.1. Analyze the intensity map to identify regions with high solar flare intensity.
