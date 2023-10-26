@@ -69,6 +69,7 @@ colnames(intensity_by_location_method2) <- c("X", "Y", "Derived_Intensity")
 ########################################################################################################################################
 
 # subtask 3 - create intensity maps for months 1+2+3+4 for method 1 and method 2
+library(ggplot2)
 
 # find months 1+2+3+4
 filtered_by_months_1_4 = subset(intensity_by_location_method1, month %in% 1:4)
