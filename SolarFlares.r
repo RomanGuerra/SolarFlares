@@ -1,117 +1,95 @@
-# Solar Flares
-setwd("G:/My Drive/UH Fall 2023/COSC 3337 Data Science I/Group Project/CODE")
-setwd("C:/Users/Tyler/OneDrive/Documents/Data Science I/Group Project/Dataset")
-SolarData <- read.csv("Solar_flare_RHESSI_2004_05.csv")
-
-# TASK 1
-# Method 1 - Solar Flare Intensity Estimation (based on total.counts)
-################ NOTES: ############################################# 
-# intensity estimation techniques measure the flare intensity at a location
-# (x,y) based on a set of flare events
-
-library(dplyr)
-locationX <- 100
-locationY <- 100
-start_date <- as.date("2004-01-01")
-end_date <- as.date("2005-12-31")
-
-# Filter
-filtered_data <- SolarData %>%
-filter(x.pos.asec >= (locationX - 10), x.pos.asec <= (locationX + 10))
-plot(SolarData$x.pos.asec, SolarData$y.pos.asec)
-
-#############################################################################
-#install.packages("readxl")
+# Libraries
+# install.packages("readxl")
+# install.packages("lubridate")
+library(lubridate)
 library(readxl)
-
-#subtask for task 1
-
-
-#1.
-#Method 1
-########################################################################################################################################
-
-# Set the path to your xlsx file
-file_path <- "/Users/miguelgarcia/Desktop/University of Houston/Fall 2023/Data Science 1 3337/Group_Project/Solar_flare_RHESSI_2004_05.xlsx"
-
-# Read the xlsx file
-data_solar_flare_2004 <- read_excel(file_path)
-
-
-# Group by x.pos.asec and y.pos.asec and calculate the sum of total.counts for each location
-intensity_by_location_method1 <- aggregate(data_solar_flare_2004$total.counts, 
-                                   by=list(X=data_solar_flare_2004$x.pos.asec, Y=data_solar_flare_2004$y.pos.asec), sum)
-
-# Rename the columns
-colnames(intensity_by_location_method1) <- c("X", "Y", "Total_Intensity")
-
-
-########################################################################################################################################
-
-
-
-#2
-#Method 2
-########################################################################################################################################
-
-
-# Compute a derived intensity value by multiplying duration.s and energy.kev
-data_solar_flare_2004$derived_intensity <- data_solar_flare_2004$duration.s * as.numeric(as.character(data_solar_flare_2004$energy.kev))
-
-# Group by x.pos.asec and y.pos.asec and calculate the sum of derived_intensity for each location
-intensity_by_location_method2 <- aggregate(data_solar_flare_2004$derived_intensity, 
-                                           by=list(X=data_solar_flare_2004$x.pos.asec, Y=data_solar_flare_2004$y.pos.asec), sum)
-
-# Rename the columns
-colnames(intensity_by_location_method2) <- c("X", "Y", "Derived_Intensity")
-
-
-########################################################################################################################################
-
-# subtask 3 - create intensity maps for months 1+2+3+4 for method 1 and method 2
+library(dplyr)
 library(ggplot2)
 
-# find months 1+2+3+4
-filtered_by_months_1_4 = subset(intensity_by_location_method1, month %in% 1:4)
+# Set directory (change this to your directory)
+setwd("G:/My Drive/UH Fall 2023/COSC 3337 Data Science I/Group Project/CODE")
+# setwd("C:/Users/Tyler/OneDrive/Documents/Data Science I/Group Project/Dataset")
 
-# create intensity map for method 1
-ggplot(filtered_by_months_1_4, aes(x=X, y=Y, fill=Total_Intensity)) +
-    geom_tile() +
-    scale_fill_gradient(low = "white", high = "red") + 
-    labs(title= "Intensity Map for Method 1", x = "X Position", y = "Y Position") +
-    theme_minimal()
+# Read File
+SolarData <- read.csv("Solar_flare_RHESSI_2004_05.csv")
 
-# use intensity by location method 2
-filtered_by_months_1_4 = subset(intensity_by_location_method2, month %in% 1:4)
+# Add Date column with class Date
+SolarData <- SolarData %>% mutate(Date = as.Date(paste(year, month, day, sep = "-")))
 
-  # create intensity map for method 2
-ggplot(filtered_by_months_1_4, aes(x=X, y=Y, fill="Derived_Intensity")) +
-    geom_tile() +
-    scale_fill_gradient(low="white", high="red") +
-    labs(title= "Intensity Map for Method 2", x= "X Position", y= "Y Position") +
-    theme_minimal()  
+# Factor energy.kev
+Energy_Levels <- c("6-12", "12-25", "25-50", "50-100", "100-300", "300-800", "800-7000", "7000-20000")
+SolarData$energy.kev.f = factor(SolarData$energy.kev, levels = unique(Energy_Levels), ordered = T)
+
+########################################################################################################################################
 
 
-##############################################################################################
-# subtask 4 - create intensity maps for months 21+22+23+24
+# TASK 1
+## Method 1 - Solar Flare Intensity Estimation (based on total.counts)
 
-# method 1
-# find months 21+22+23+24
-filtered_by_months_21_24 = subset(intensity_by_location_method1, month %in% 21:24)
+# Set the parameters for batch creation
+batch_size <- 4  # 4 months per batch
+overlap <- 2     # 2-month overlap
+start_date <- as.Date("2004-01-01")
 
-# create intensity map for method 1
-ggplot(filtered_by_months_21_24, aes(x=X, y=Y, fill=Total_Intensity)) +
-    geom_tile() +
-    scale_fill_gradient(low = "white", high = "red") + 
-    labs(title= "Intensity Map for Method 1", x = "X Position", y = "Y Position") +
-    theme_minimal()
+for (i in 1:11) {
+  batch_start_date <- start_date %m+% months(overlap * (i - 1))
+  batch_end_date <- batch_start_date %m+% months(batch_size) - days(1)
+  
 
-# method 2
-filtered_by_months_21_24 = subset(intensity_by_location_method2, month %in% 21:24)
+  # Filter the data for the current batch
+  batch_data <- SolarData %>%
+    filter(Date >= batch_start_date, Date <= batch_end_date)
+  
+  method1_intensity <- batch_data %>%
+    group_by(x.pos.asec, y.pos.asec) %>%
+    summarise(total_intensity = sum(total.counts))
+  
+  intensity_by_location_method1 <- aggregate(SolarData$total.counts, 
+                                             by=list(X=SolarData$x.pos.asec, Y=SolarData$y.pos.asec), sum)
+  colnames(intensity_by_location_method1) <- c("x", "y", "total_intensity")
+  
+    # Create a heat map for the current batch
+  if (i == 1 || i == 11) {
+    intesity_map <- ggplot(method1_intensity, aes(x = `x.pos.asec`, y = `y.pos.asec`, fill = `total_intensity`)) +
+      geom_tile() + scale_fill_gradient(low = "blue", high = "red") +
+      labs(title = paste("Solar Flare Intensity by Total Counts - Batch", i, "Heat Map"), x = "X Position", y = "Y Position", fill = "Intensity", subtitle = "using group") + theme_tufte()
+    print(intesity_map)
 
-# create intensity map for method 2
-ggplot(filtered_by_months_21_24, aes(x=X, y=Y, fill=Total_Intensity)) +
-    geom_tile() +
-    scale_fill_gradient(low = "white", high = "red") + 
-    labs(title= "Intensity Map for Method 1", x = "X Position", y = "Y Position") +
-    theme_minimal()
+    intesity_map2 <- ggplot(intensity_by_location_method1, aes(x = `x`, y = `y`, fill = `total_intensity`)) +
+      geom_tile() + scale_fill_gradient(low = "blue", high = "red") +
+      labs(title = paste("Solar Flare Intensity by Total Counts - Batch", i, "Heat Map"), x = "X Position", y = "Y Position", fill = "Intensity", subtitle = "using aggregate") + theme_tufte()
+    print(intesity_map2)
+  }
+}
+
+
+for (i in 1:11) {
+  batch_start_date <- start_date %m+% months(overlap * (i - 1))
+  batch_end_date <- batch_start_date %m+% months(batch_size) - days(1)
+  
+  
+  # Filter the data for the current batch
+  batch_data <- SolarData %>%
+    filter(Date >= batch_start_date, Date <= batch_end_date)
+  
+  method2_intensity <- batch_data %>%
+    group_by(x.pos.asec, y.pos.asec) %>%
+    summarise(total_duration = sum(duration.s))
+  
+  intensity_by_location_method2 <- aggregate(SolarData$duration.s, 
+                                             by=list(X=SolarData$x.pos.asec, Y=SolarData$y.pos.asec), sum)
+  colnames(intensity_by_location_method2) <- c("x", "y", "total_duration")
+  
+  if (i == 1 || i == 11) {
+    # Create a heat map for the current batch
+    intesity_map3 <- ggplot(method2_intensity, aes(x = `x.pos.asec`, y = `y.pos.asec`, fill = `total_duration`)) +
+      geom_tile() + scale_fill_gradient(low = "blue", high = "red") +
+      labs(title = paste("Solar Flare Intensity by Total Duration - Batch", i, "Heat Map"), x = "X Position", y = "Y Position", fill = "Intensity", subtitle = "using group") + theme_tufte()
+    print(intesity_map3)
+    
+    intesity_map4 <- ggplot(intensity_by_location_method2, aes(x = `x`, y = `y`, fill = `total_duration`)) +
+      geom_tile() + scale_fill_gradient(low = "blue", high = "red") +
+      labs(title = paste("Solar Flare Intensity by Total Duration - Batch", i, "Heat Map"), x = "X Position", y = "Y Position", fill = "Intensity", subtitle = "using aggregate") + theme_tufte()
+    print(intesity_map4)
+  }
+}
