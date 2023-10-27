@@ -1,10 +1,14 @@
 # Libraries
 # install.packages("readxl")
 # install.packages("lubridate")
+# install.packages("hexbin")
+library(hexbin)
+library(RColorBrewer)
 library(lubridate)
 library(readxl)
 library(dplyr)
 library(ggplot2)
+library(ggthemes)
 
 # Set directory (change this to your directory)
 setwd("G:/My Drive/UH Fall 2023/COSC 3337 Data Science I/Group Project/CODE")
@@ -50,13 +54,13 @@ for (i in 1:11) {
   
     # Create a heat map for the current batch
   if (i == 1 || i == 11) {
-    intesity_map <- ggplot(method1_intensity, aes(x = `x.pos.asec`, y = `y.pos.asec`, fill = `total_intensity`)) +
-      geom_tile() + scale_fill_gradient(low = "blue", high = "red") +
+    intesity_map <- ggplot(method1_intensity, aes(x = `x.pos.asec`, y = `y.pos.asec`)) +
+      geom_hex() + scale_fill_continuous(type = "viridis") +
       labs(title = paste("Solar Flare Intensity by Total Counts - Batch", i, "Heat Map"), x = "X Position", y = "Y Position", fill = "Intensity", subtitle = "using group") + theme_tufte()
     print(intesity_map)
 
-    intesity_map2 <- ggplot(intensity_by_location_method1, aes(x = `x`, y = `y`, fill = `total_intensity`)) +
-      geom_tile() + scale_fill_gradient(low = "blue", high = "red") +
+    intesity_map2 <- ggplot(intensity_by_location_method1, aes(x = `x`, y = `y`)) +
+      geom_hex() + scale_fill_continuous(type = "viridis") +
       labs(title = paste("Solar Flare Intensity by Total Counts - Batch", i, "Heat Map"), x = "X Position", y = "Y Position", fill = "Intensity", subtitle = "using aggregate") + theme_tufte()
     print(intesity_map2)
   }
@@ -82,13 +86,13 @@ for (i in 1:11) {
   
   if (i == 1 || i == 11) {
     # Create a heat map for the current batch
-    intesity_map3 <- ggplot(method2_intensity, aes(x = `x.pos.asec`, y = `y.pos.asec`, fill = `total_duration`)) +
-      geom_tile() + scale_fill_gradient(low = "blue", high = "red") +
+    intesity_map3 <- ggplot(method2_intensity, aes(x = `x.pos.asec`, y = `y.pos.asec`)) +
+      geom_hex() + scale_fill_continuous(type = "viridis") +
       labs(title = paste("Solar Flare Intensity by Total Duration - Batch", i, "Heat Map"), x = "X Position", y = "Y Position", fill = "Intensity", subtitle = "using group") + theme_tufte()
     print(intesity_map3)
     
-    intesity_map4 <- ggplot(intensity_by_location_method2, aes(x = `x`, y = `y`, fill = `total_duration`)) +
-      geom_tile() + scale_fill_gradient(low = "blue", high = "red") +
+    intesity_map4 <- ggplot(intensity_by_location_method2, aes(x = `x`, y = `y`)) +
+      geom_hex() + scale_fill_continuous(type = "viridis") +
       labs(title = paste("Solar Flare Intensity by Total Duration - Batch", i, "Heat Map"), x = "X Position", y = "Y Position", fill = "Intensity", subtitle = "using aggregate") + theme_tufte()
     print(intesity_map4)
   }
