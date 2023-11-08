@@ -24,6 +24,19 @@ SolarData <- SolarData %>% mutate(Date = as.Date(paste(year, month, day, sep = "
 Energy_Levels <- c("6-12", "12-25", "25-50", "50-100", "100-300", "300-800", "800-7000", "7000-20000")
 SolarData$energy.kev.f = factor(SolarData$energy.kev, levels = unique(Energy_Levels), ordered = T)
 
+Exclude_Levels <- c("12-25", "25-50", "50-100", "100-300", "300-800", "800-7000", "7000-20000")
+SolarData$energy.kev.fex <- factor(SolarData$energy.kev, levels = Energy_Levels[!Energy_Levels %in% Exclude_Levels], ordered = T)
+
+solar_map <- ggplot(SolarData, aes(x = `x.pos.asec`, y = `y.pos.asec`, color = energy.kev.f)) +
+  geom_point() + scale_fill_continuous(type = "viridis") +
+  theme_tufte()
+print(solar_map)
+
+solar_map <- ggplot(SolarData, aes(x = `x.pos.asec`, y = `y.pos.asec`, size = radial)) +
+  geom_point() + scale_fill_continuous(type = "viridis") +
+  theme_tufte()
+print(solar_map)
+
 ########################################################################################################################################
 
 
