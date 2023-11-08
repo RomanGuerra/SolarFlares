@@ -110,3 +110,25 @@ for (i in 1:11) {
     print(intesity_map4)
   }
 }
+
+# Task 2 - Part A - Hotspot Discovery Algorithm
+install.packages("sp")
+library(sp)
+
+# not sure if these would be correct values for d1 and d2
+# just looked at the plots and chose an arbitrary value
+d1 <- 400
+d2 <- 200
+
+# identify hotspots
+discover_hotspots <- function(intensity_map, threshold) {
+  # create contour lines at the given threshold
+  contour_lines <- contourLines(intensity_map, levels = threshold)
+
+  # create polygons based off the contour lines
+  polygons <- lapply(contour_lines, function(line){
+    polygon(coords = line$points, hole = FALSE)
+  })
+
+  hotspot_polygons <- SpatialPolygons(polygons)
+}
