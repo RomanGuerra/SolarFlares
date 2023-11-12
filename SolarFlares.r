@@ -238,25 +238,29 @@ visualize_hotspots(intensity_map, hotspots_d2)
 
 ################### Time Series ###########################
 
-# store hotspot information for each batch
-hotspot_information <- list()
+# # store hotspot information for each batch
+# hotspot_information <- list()
 
-# iterate over the 11 batches
-for (i in 1:11) {
-  batch_start_date <- start_date %m+% months(overlap * (i - 1))
-  batch_end_date <- batch_start_date %m+% months(batch_size) - days(1)
+# # iterate over the 11 batches
+# for (i in 1:11) {
+#   batch_start_date <- start_date %m+% months(overlap * (i - 1))
+#   batch_end_date <- batch_start_date %m+% months(batch_size) - days(1)
   
   
-  # Filter the data for the current batch
-  batch_data <- SolarData %>%
-    filter(Date >= batch_start_date, Date <= batch_end_date)
+#   # Filter the data for the current batch
+#   batch_data <- SolarData %>%
+#     filter(Date >= batch_start_date, Date <= batch_end_date)
   
-  # find hotspot for threshold d1
-  hotspots <- find_hotspots(intensity_map, d1)
+#   # find hotspot for threshold d1
+#   hotspots <- find_hotspots(intensity_map, d1)
   
-  # store the hotspot information to be plotted later
-  hotspot_information[i] <- hotspots
-}
+#   # store the hotspot information to be plotted later
+#   hotspot_information[i] <- hotspots
+# }
+
+ggplot(data=hotspots_d1, aes(x=X, y=Y, fill=Intensity)) + geom_line()
+
+ggplot(data=hotspots_d2, aes(x=X, y=Y, fill=Intensity)) + geom_line()
 
 
 
