@@ -1,39 +1,60 @@
-# Helios:
+# Helios Solar Data
 
 ## Summarization, Mapping, Hotspot Discovery and Change Analysis of High-Intensity Solar Flare Events
 
-### Solar Flare Intensity Estimation
+## Overview
+This R code is designed to process solar flare data obtained from the RHESSI satellite during the periods 2004-2005, and 2015-2016. The code includes visualizations, intensity estimation methods, and spatial analyses.
 
-**Batch Processing:** The data is divided into batches, with each batch representing a specific time period. The parameters for batch creation are specified, including batch size, overlap, and the start date. These are the following batches:
-<ul>
-    1+2+3+4,
-    3+4+5+6,
-    5+6+7+8,
-    7+8+9+10,
-    9+10+11+12,
-    11+12+13+14,
-    13+14+15+16,
-    15+16+17+18,
-    17+18+19+20,
-    19+20+21+22,
-    21+22+23+24,
-</ul>
+## Libraries
+The code uses several R libraries for data manipulation and visualization, such as `hexbin`, `lubridate`, `readxl`, `dplyr`, `ggplot2`, and others.
 
-**Method 1 - Total Counts:** For each batch, the R code calculates the total intensity of solar flares by grouping the data based on the positions of solar flares (x and y coordinates) and summarizing the total counts. It creates heat maps to visualize the intensity for the current batch using both the group_by and aggregate functions. These heat maps are displayed for the first and last batch (i.e., batch 1 and batch 11).
+## Instructions
+1. Ensure the required libraries are installed by running the provided installation commands.
+2. Set the working directory to the location of your data files.
+3. Read the solar flare data files (`Solar_flare_RHESSI_2004_05.csv` and `Solar_flare_RHESSI_2015_16.csv`).
+4. Execute various visualization and analysis tasks using the provided code sections.
+
+## Visualization
+- The code generates spatial distribution maps of solar flares, histograms of energy levels, and intensity heatmaps.
+- An animation feature is included for visualizing solar flares over time.
 
 ![Batch1 Heat Map!](/plots/Method%201-1%20group.jpeg)
 
-**Method 2 - Total Duration:** For each batch, the R code calculates the total duration of solar flares by grouping the data based on the positions of solar flares and summarizing the total duration. Again, it creates heat maps to visualize the intensity for the current batch using both the group_by and aggregate functions. These heat maps are displayed for the first and last batch (i.e., batch 1 and batch 11).
 
-![Batch 11 Heat Map!](/plots/Method%202-2%20aggregate.jpeg "Heat Map")
+## Intensity Estimation Methods
+The code implements two methods for estimating solar flare intensity:
+1. Method 1: Based on total counts
+2. Method 2: Combining duration and energy levels
 
-In summary, the code divides the solar flare data into batches and estimates the intensity of solar flares within each batch using two methods: one based on total counts and the other based on total duration. Heat maps are generated to visualize the intensity for each batch. The code also shows heat maps for the first and last batch, making it easier to compare the results obtained using the two methods.
+## Hotspot Detection
+A function is provided to identify hotspots in solar flare intensity, with customizable intensity thresholds.
+
+## Time Series Analysis
+The code performs time series analysis, generating intensity maps for each batch of data.
+
+## Additional Analyses
+- Comparison of solar flare data between 2004-2005 and 2015-2016.
+- Analysis of peak count rates and spatial statistics.
+
+## Project Contacts
+For questions or further information, please reachout to anyone on the team:
+
+1. **Roman Guerra**
+   - Email: rguerra6@CougarNet.UH.EDU
+   - GitHub: [RomanGuerra](https://github.com/RomanGuerra)
+
+2. **Tyler Balka**
+   - Email: tjbalka@CougarNet.UH.EDU
+   - GitHub: [Tyler-Balka](https://github.com/Tyler-Balka)
+
+3. **Reem Abdelaziz**
+   - Email: rmabdela@CougarNet.UH.EDU
+   - GitHub: [reemdelziz](https://github.com/reemdelziz)
+
+4. **Miguel Garcia**
+   - Email: mlgarc25@CougarNet.UH.EDU
+   - GitHub: [migueleog01](https://github.com/migueleog01)
 
 ## Resources
-
-[The Sun in Depth](http://solarcellcentral.com/sun_page.html)
-[NASA spacecraft flies through sun explosion, and captures footage](http://solarcellcentral.com/sun_page.html)
-[HESSI](https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager)
-
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/FF_e5eYgJ3Y?si=Kw5Sz5HzYaf_GapK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+- [The Sun in Depth](http://solarcellcentral.com/sun_page.html)
+- [HESSI](https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager)
